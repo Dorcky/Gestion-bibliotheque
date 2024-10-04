@@ -1,0 +1,12 @@
+{
+  "apps": [
+    {
+      "app_id": "app_fde320cd-9b93-4fe5-b37b-1322ab607270",
+      "org_id": "user_74c15e1f-222e-4f30-8f14-1d97e01c431e",
+      "deploy_url": "https://push-n3-par-clevercloud-customers.services.clever-cloud.com/app_fde320cd-9b93-4fe5-b37b-1322ab607270.git",
+      "git_ssh_url": "git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_fde320cd-9b93-4fe5-b37b-1322ab607270.git",
+      "name": "Gestion-bibliotheque",
+      "alias": "Gestion-bibliotheque"
+    }
+  ]
+}
