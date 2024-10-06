@@ -16,4 +16,7 @@ router.put('/:id', authMiddleware, utilisateurController.updateUser);
 // Route de suppression (admin seulement)
 router.delete('/:id', authMiddleware, adminMiddleware, utilisateurController.deleteUser);
 
+// Route pour obtenir le profil de l'utilisateur connecté
+router.get('/profile', authMiddleware, utilisateurController.getProfile);
+
 export default router;

@@ -116,3 +116,21 @@ export const deleteUser = async (req, res) => {
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
 };
+
+// Fonction pour obtenir le profil de l'utilisateur
+export const getProfile = async (req, res) => {
+  try {
+    const utilisateur = await Utilisateur.findByPk(req.user.id, {
+      attributes: ['id', 'email', 'role'] // N'incluez pas le mot de passe
+    });
+
+    if (!utilisateur) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+    }
+
+    res.status(200).json(utilisateur);
+  } catch (error) {
+    console.error('Erreur lors de la récupération du profil:', error);
+    res.status(500).json({ message: 'Erreur serveur lors de la récupération du profil.' });
+  }
+};

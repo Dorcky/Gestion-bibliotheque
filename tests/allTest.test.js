@@ -70,6 +70,18 @@ describe('User Authentication and CRUD', () => {
     adminToken = res.body.token;
   });
 
+  // Test pour obtenir le profil de l'utilisateur
+  it('should get user profile', async () => {
+    const res = await request(app)
+      .get('/api/utilisateurs/profile')
+      .set('Authorization', `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('email');
+    expect(res.body).toHaveProperty('role');
+    expect(res.body).not.toHaveProperty('motDePasse');
+  });
+
   // Test : un utilisateur normal ne peut pas mettre à jour un autre utilisateur
   it('should not allow regular user to update another user', async () => {
     const user = await Utilisateur.findOne({ where: { email: 'admin@example.com' } });
