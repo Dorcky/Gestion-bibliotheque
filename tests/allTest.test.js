@@ -123,6 +123,58 @@ describe('User Authentication and CRUD', () => {
   });
 });
 
+// Tests pour obtenir tous les utilisateurs
+describe('Get All Users', () => {
+  let adminToken;
+
+  // Avant tous les tests, créer un utilisateur admin pour les tests
+  beforeAll(async () => {
+    const admin = await Utilisateur.create({
+      email: 'admin_get_users@test.com',
+      motDePasse: await bcrypt.hash('adminpass123', 10),
+      role: 'admin'
+    });
+    adminToken = jwt.sign(
+      { id: admin.id, role: admin.role },
+      process.env.JWT_SECRET || 'a78oiu8',
+      { expiresIn: '1h' }
+    );
+  });
+
+  // Test : un admin peut obtenir tous les utilisateurs
+  it('should allow admin to get all users', async () => {
+    const res = await request(app)
+      .get('/api/utilisateurs')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0); // S'assurer qu'il y a des utilisateurs
+    expect(res.body[0]).toHaveProperty('email'); // Vérifier que chaque utilisateur a une propriété email
+  });
+
+  // Test : un utilisateur normal ne peut pas obtenir tous les utilisateurs
+  it('should not allow regular user to get all users', async () => {
+    const user = await Utilisateur.create({
+      email: 'user_get_users@test.com',
+      motDePasse: await bcrypt.hash('password123', 10),
+      role: 'utilisateur'
+    });
+    const userToken = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET || 'a78oiu8',
+      { expiresIn: '1h' }
+    );
+
+    const res = await request(app)
+      .get('/api/utilisateurs')
+      .set('Authorization', `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(403); // Vérifier que l'accès est refusé
+  });
+});
+
+
 // Tests pour les opérations sur les auteurs
 describe('Author Operations', () => {
   let userToken, adminToken, authorId;
@@ -279,3 +331,4 @@ describe('Book Operations', () => {
     expect(res.body.message).toBe('Livre supprimé avec succès');
   });
 });
+

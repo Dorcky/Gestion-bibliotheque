@@ -19,4 +19,7 @@ router.delete('/:id', authMiddleware, adminMiddleware, utilisateurController.del
 // Route pour obtenir le profil de l'utilisateur connecté
 router.get('/profile', authMiddleware, utilisateurController.getProfile);
 
+// Route pour obtenir tous les utilisateurs (uniquement pour admin)
+router.get('/', authMiddleware, adminMiddleware, utilisateurController.getUsers);
+
 export default router;

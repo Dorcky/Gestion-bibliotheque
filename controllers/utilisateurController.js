@@ -117,6 +117,18 @@ export const deleteUser = async (req, res) => {
   }
 };
 
+// obtenir les utilisateurs
+export const getUsers = async (req, res) => {
+  try {
+    const users = await Utilisateur.findAll(); // Assurez-vous que c'est bien Utilisateur
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur lors de la récupération des utilisateurs.' });
+  }
+};
+
+
+
 // Fonction pour obtenir le profil de l'utilisateur
 export const getProfile = async (req, res) => {
   try {
