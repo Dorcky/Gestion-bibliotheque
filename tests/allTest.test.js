@@ -332,3 +332,62 @@ describe('Book Operations', () => {
   });
 });
 
+// Décrire le groupe de tests pour la route utilisateur
+describe('Get User by ID', () => {
+  let userToken;
+  let userId;
+
+  // Créer un utilisateur avant les tests
+  beforeAll(async () => {
+    const user = await Utilisateur.create({
+      email: 'testuser@example.com',
+      motDePasse: await bcrypt.hash('password123', 10),
+      role: 'utilisateur',
+    });
+    userId = user.id;
+    userToken = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET || 'a78oiu8',
+      { expiresIn: '1h' }
+    );
+  });
+
+  // Test pour obtenir un utilisateur existant
+  it('should get user by ID', async () => {
+    const res = await request(app)
+      .get(`/api/utilisateurs/${userId}`)
+      .set('Authorization', `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('email', 'testuser@example.com');
+  });
+
+  // Test pour obtenir un utilisateur non existant
+  it('should return 404 if user not found', async () => {
+    const res = await request(app)
+      .get('/api/utilisateurs/9999') // Un ID qui n'existe pas
+      .set('Authorization', `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty('message', 'Utilisateur non trouvé.');
+  });
+
+  // Test pour accéder à la route sans token
+  it('should return 401 if no token provided', async () => {
+    const res = await request(app).get(`/api/utilisateurs/${userId}`);
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty('error', 'Accès refusé. Aucun token fourni.');
+  });
+
+  // Test pour accéder à la route avec un token invalide
+  it('should return 401 if token is invalid', async () => {
+    const res = await request(app)
+      .get(`/api/utilisateurs/${userId}`)
+      .set('Authorization', 'Bearer invalidtoken');
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty('error', 'Token invalide ou expiré');
+  });
+});
+

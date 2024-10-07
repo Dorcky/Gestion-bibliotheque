@@ -146,3 +146,35 @@ export const getProfile = async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur lors de la récupération du profil.' });
   }
 };
+
+//obtenir un utilisateur
+
+export const getUserById = async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+      // Récupérer les données de l'utilisateur demandé
+      const user = await Utilisateur.findByPk(userId, {
+          attributes: ['id', 'email', 'role'] // Exclure le mot de passe
+      });
+
+      if (!user) {
+          return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+      }
+
+      // Vérifier si l'utilisateur essaie d'accéder à ses propres données
+      if (userId === req.user.id.toString()) {
+          return res.status(200).json(user);
+      }
+
+      // Vérifier si l'utilisateur actuel est un admin
+      if (req.user.role !== 'admin') {
+          return res.status(403).json({ message: 'Accès interdit.' });
+      }
+
+      return res.status(200).json(user);
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Erreur interne du serveur.' });
+  }
+};

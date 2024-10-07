@@ -1,6 +1,6 @@
 import express from 'express';
 import * as utilisateurController from '../controllers/utilisateurController.js';
-import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
+import { authMiddleware, adminMiddleware} from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -21,5 +21,9 @@ router.get('/profile', authMiddleware, utilisateurController.getProfile);
 
 // Route pour obtenir tous les utilisateurs (uniquement pour admin)
 router.get('/', authMiddleware, adminMiddleware, utilisateurController.getUsers);
+
+// Route pour obtenir un utilisateur par ID (authentifiée)
+router.get('/:id', authMiddleware, utilisateurController.getUserById);
+
 
 export default router;
